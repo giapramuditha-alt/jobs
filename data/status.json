@@ -1,0 +1,29 @@
+{
+ "updatedAt": "2026-11-24T01:36:44.954Z",
+ "sources": {
+  "jooble": {
+   "name": "Jooble (aggregator)",
+   "state": "needs_key",
+   "message": "Set secret JOOBLE_KEY",
+   "count": 0
+  },
+  "google_jobs": {
+   "name": "Google Jobs (via SerpApi)",
+   "state": "needs_key",
+   "message": "Set secret SERPAPI_KEY",
+   "count": 0
+  },
+  "greenhouse": {
+   "name": "Company career pages – Greenhouse",
+   "state": "not_configured",
+   "message": "Isi daftar perusahaan di config.json",
+   "count": 0
+  },
+  "lever": {
+   "name": "Company career pages – Lever",
+   "state": "not_configured",
+   "message": "Isi daftar perusahaan di config.json",
+   "count": 0
+  }
+ }
+}

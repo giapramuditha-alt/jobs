@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>JobHub</title><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>:root{--bg:#f7f6f3;--sf:#fff;--tx:#1f2328;--mu:#6b7280;--bd:#e6e3dc;--ac:#3b5b7a;--ok:#2f7d57;--wn:#b7791f;--er:#b4423a}
+@media(prefers-color-scheme:dark){:root{--bg:#17181a;--sf:#212326;--tx:#e8e6e1;--mu:#9aa0a8;--bd:#33363a;--ac:#8fb0cf;--ok:#5fbf90;--wn:#e0a948;--er:#e07b73}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,sans-serif;padding:20px;max-width:980px;margin:auto}
+.c{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-bottom:8px}.m{color:var(--mu);font-size:12px}
+input,select{font:inherit;color:var(--tx);background:var(--sf);border:1px solid var(--bd);border-radius:6px;padding:6px 8px}.bar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.sc{float:right;font-weight:700;color:var(--ac)}a{color:var(--ac)}.t{display:inline-block;border:1px solid var(--bd);border-radius:4px;padding:0 6px;font-size:11px;margin-right:4px}
+.connected{color:var(--ok)}.error{color:var(--er)}.needs_key,.not_configured{color:var(--wn)}.tabs button{all:unset;cursor:pointer;padding:6px 12px;border-radius:6px;color:var(--mu)}.tabs button.on{background:var(--sf);color:var(--ac);border:1px solid var(--bd)}</style></head><body>
+<h1>🧭 JobHub</h1><div class="tabs" id="tabs"></div><div id="v"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const TS=["Interested","To Apply","Applied","CV Reviewed","HR Screening","HR Interview","User Interview","Assessment","Final Interview","Offering","Hired","Rejected","Withdrawn","On Hold"];
+let J=[],ST={},DG={},V="digest",F={q:"",min:60,sort:"score"},T=JSON.parse(localStorage.getItem("jh-track")||"{}");
+const idr=n=>n?"Rp"+n.toLocaleString("id-ID"):"";const saveT=()=>localStorage.setItem("jh-track",JSON.stringify(T));
+async function init(){try{[J,ST,DG]=await Promise.all(["jobs","status","digest"].map(f=>fetch("data/"+f+".json?"+Date.now()).then(r=>r.json())))}catch(e){$("#v").textContent="Gagal memuat data: "+e.message}render()}
+function card(j){const t=T[j.id]||{};return`<div class="c"><span class="sc">${j.score}%</span><b>${esc(j.title)}</b> <span class="m">· ${esc(j.company)}</span><div class="m">${esc(j.location||"")} ${j.salMax?"· "+idr(j.salMin)+" – "+idr(j.salMax):"· gaji tidak dicantumkan"} ${j.expired?'<span class="t error">expired</span>':""}</div>
+<div class="m">Cocok pada: ${esc((j.matchedSkills||[]).join(", ")||"–")}</div><div>${j.links.map(l=>`<a class="t" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.platform)} ↗</a>`).join("")}</div>
+<select data-j="${j.id}"><option value="">Tracker: –</option>${TS.map(s=>`<option ${t.s==s?"selected":""}>${s}</option>`).join("")}</select></div>`}
+function render(){const tabs=[["digest","Daily Digest"],["jobs","Semua Lowongan"],["track","Tracker"],["int","Integrasi"]];$("#tabs").innerHTML=tabs.map(([k,v])=>`<button class="${V==k?"on":""}" data-v="${k}">${v}</button>`).join("");
+ const by=Object.fromEntries(J.map(j=>[j.id,j])),v=$("#v"),L=ids=>(ids||[]).map(i=>by[i]).filter(Boolean);
+ if(V=="digest"){const s=(h,a)=>`<h3>${h} (${a.length})</h3>${a.map(card).join("")||'<div class="m">Kosong.</div>'}`;
+  v.innerHTML=`<div class="m">Diperbarui: ${esc(ST.updatedAt||"belum pernah")}</div>`+s("Baru (24 jam)",L(DG.newJobs))+s("Match terbaik",L(DG.best))+s("Gaji tinggi",L(DG.highSalary))+s("Baru diperbarui",L(DG.updated))}
+ if(V=="jobs"){let a=J.filter(j=>!j.expired&&j.score>=F.min&&(!F.q||(j.title+j.company+j.location).toLowerCase().includes(F.q.toLowerCase())));a.sort({score:(x,y)=>y.score-x.score,new:(x,y)=>y.firstSeen.localeCompare(x.firstSeen),sal:(x,y)=>(y.salMax||0)-(x.salMax||0)}[F.sort]);
+  v.innerHTML=`<div class="bar"><input id="q" type="search" placeholder="Cari…" value="${esc(F.q)}"><select id="mn">${[0,60,70,80,90].map(x=>`<option value="${x}" ${F.min==x?"selected":""}>Match ≥ ${x}%</option>`).join("")}</select><select id="so"><option value="score">Match</option><option value="new" ${F.sort=="new"?"selected":""}>Terbaru</option><option value="sal" ${F.sort=="sal"?"selected":""}>Gaji</option></select></div><div class="m">${a.length} lowongan</div>`+a.map(card).join("")||"";
+  $("#q").oninput=e=>{F.q=e.target.value;render();$("#q").focus()};$("#mn").onchange=e=>{F.min=+e.target.value;render()};$("#so").onchange=e=>{F.sort=e.target.value;render()}}
+ if(V=="track"){v.innerHTML=TS.map(s=>{const a=J.filter(j=>T[j.id]?.s==s);return a.length?`<h3>${s} (${a.length})</h3>`+a.map(card).join(""):""}).join("")||'<div class="m">Belum ada lowongan di tracker. Pilih status di kartu lowongan.</div>'}
+ if(V=="int"){v.innerHTML=Object.values(ST.sources||{}).map(s=>`<div class="c"><b>${esc(s.name)}</b> <span class="${s.state}">● ${s.state}</span><div class="m">Sync terakhir: ${esc(s.lastSync||"–")} · lowongan: ${s.count||0} ${s.message?"· "+esc(s.message):""}</div></div>`).join("")||'<div class="m">Belum ada data sinkronisasi.</div>'}}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-v]");if(b){V=b.dataset.v;render()}});
+document.addEventListener("change",e=>{const s=e.target.dataset?.j;if(s){T[s]=T[s]||{};T[s].s=e.target.value;T[s].d=new Date().toISOString().slice(0,10);saveT()}});
+init();
+</script></body></html>

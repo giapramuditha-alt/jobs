@@ -1,0 +1,16 @@
+{
+  "keywords": ["executive assistant", "personal assistant", "executive secretary", "corporate secretary", "administrative assistant", "office manager", "management assistant"],
+  "locations": ["Bandung", "Jakarta", "Tangerang", "Bekasi", "Cimahi"],
+  "profile": {
+    "years": 5,
+    "skills": ["scheduling","calendar","executive support","confidential","minutes","travel","correspondence","recruitment","administration","document","filing","coordination","reporting","ms office","google workspace","stakeholder","invoice","procurement"],
+    "targetTitles": ["personal assistant","executive assistant","executive secretary","corporate secretary","secretary","management assistant","administrative assistant","office manager","business support","operations administrator","project administrator","general affairs","hr & admin","management trainee"],
+    "priorityCities": ["bandung","jakarta"],
+    "otherCities": ["cimahi","tangerang","bekasi","jawa barat","west java"],
+    "salMin": 9000000
+  },
+  "minScore": 45,
+  "expireAfterMissedRuns": 3,
+  "greenhouseBoards": [],
+  "leverCompanies": []
+}
