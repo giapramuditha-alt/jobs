@@ -1,10 +1,10 @@
 {
- "updatedAt": "2026-11-24T18:57:11.359Z",
+ "updatedAt": "2026-11-25T01:08:29.352Z",
  "sources": {
   "jooble": {
    "name": "Jooble (aggregator)",
-   "state": "error",
-   "message": "HTTP 429",
+   "state": "connected",
+   "lastSync": "2026-11-25T01:08:29.352Z",
    "count": 0
   },
   "google_jobs": {
